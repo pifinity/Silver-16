@@ -1,0 +1,162 @@
+import java.io.*;
+import java.util.*;
+
+public class MooyoMooyo {
+    static ArrayList<Integer>[] board;
+    static int N, K;
+ //   static int[][] bfsBoard;
+    static boolean[][] visited;
+    static boolean[][] needsDeletion;
+
+
+    static final int[][] dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    static class pair{
+        int col, row;
+
+        public pair(int x, int y){
+            this.col = x;
+            this.row = y;
+        }
+    }
+
+    static void bfsFill(int col, int row){
+
+        int curHay = board[col].get(row);
+
+        Queue<pair> q = new LinkedList();
+        needsDeletion[col][row] = true;
+        q.add(new pair(col, row));
+
+
+
+
+        while (q.size()>0){
+            pair cur = q.poll();
+
+            for (int i=0; i<4; i++){
+                int nx = cur.row+dir[i][0];
+                int ny = cur.col+dir[i][1];
+
+                if (nx<0 || nx>=N ||ny<0 ||ny>=10) continue;
+
+                if (board[ny].get(nx)==curHay && !needsDeletion[ny][nx]){
+
+                    q.offer(new pair(ny, nx));
+                    needsDeletion[ny][nx] = true;
+                }
+            }
+        }
+
+    }
+
+    static boolean bfsCheck(int col, int row){
+
+        int curHay = board[col].get(row);
+
+        Queue<pair> q = new LinkedList();
+        visited[col][row] = true;
+        q.add(new pair(col, row));
+
+        int count =1;
+
+
+        while (q.size()>0){
+            pair cur = q.poll();
+
+            for (int i=0; i<4; i++){
+                int nx = cur.row+dir[i][0];
+                int ny = cur.col+dir[i][1];
+
+                if (nx<0 || nx>=N ||ny<0 ||ny>=10) continue;
+
+                if (board[ny].get(nx)==curHay && !visited[ny][nx]){
+                    count++;
+                    if (count>=K) return true;
+                    q.offer(new pair(ny, nx));
+                    visited[ny][nx] = true;
+                }
+            }
+        }
+        return false;
+
+    }
+    public static void main(String[] args) throws IOException {
+        BufferedReader bf = new BufferedReader(new FileReader("mooyomooyo.in"));
+        PrintWriter out =new PrintWriter("mooyomooyo.out");
+
+        StringTokenizer st = new StringTokenizer( bf.readLine());
+
+        N = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        board = new ArrayList[10];
+  //      bfsBoard = new int[N][10];
+
+        for (int i=0; i<10; i++){
+            board[i] = new ArrayList<>();
+        }
+
+        for (int i=0; i<N; i++){
+            String temp = bf.readLine();
+            for (int j=0; j<10; j++){
+                int a =temp.charAt(j)-48;
+       //         System.out.print(a);
+                board[j].add(0, a);
+                //bfsBoard[i][j] = a;
+            }
+        }
+
+        for (int i=0; i<N; i++){
+            for (int j=0; j<10; j++){
+                System.out.print(board[j].get(i));
+            }
+            System.out.println();
+        }
+
+        System.out.println();
+
+        do {
+            visited = new boolean[10][N];
+            needsDeletion = new boolean[10][N];
+            boolean isFinished = true;
+
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < 10; j++) {
+                    visited = new boolean[10][N];
+                    if (board[j].get(i) != 0 && !needsDeletion[j][i] && bfsCheck(j, i)) {
+                        bfsFill(j, i);
+                        isFinished = false;
+                    }
+                }
+
+            }
+
+            for (int i = N - 1; i >= 0; i--) {
+                for (int j = 0; j < 10; j++) {
+                    if (needsDeletion[j][i]) {
+                        board[j].remove(i);
+                        board[j].add(0);
+                    }
+                }
+
+            }
+
+
+            if (isFinished) break;
+
+        }while (true);
+
+
+        for (int i = N-1; i >= 0; i--) {
+            for (int j = 0; j < 10; j++) {
+                out.print(board[j].get(i));
+            }
+            out.println();
+        }
+
+        out.close();
+
+
+    }
+
+}
