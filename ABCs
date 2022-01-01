@@ -1,0 +1,61 @@
+import java.io.*;
+import java.util.*;
+
+public class ABCs {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+
+        int T  = Integer.parseInt(bf.readLine());
+
+        for (int i=0; i<T; i++){
+            int N = Integer.parseInt(bf.readLine());
+
+            Set<Integer> pos = new HashSet<>();
+
+            int[] nums = new int[N];
+
+            StringTokenizer st = new StringTokenizer(bf.readLine());
+
+            for (int j=0; j<N; j++){
+                int a = Integer.parseInt(st.nextToken());
+                nums[j] = a;
+                pos.add(a);
+            }
+
+            for (int j=0; j<N; j++){
+                for (int x =j+1; x<N; x++){
+                    pos.add(Math.abs(nums[j]-nums[x]));
+                    pos.add(Math.abs(nums[x]+nums[j]));
+                }
+            }
+            int ret =0;
+
+            for (int a : pos){
+                for (int b : pos){
+                    for (int c : pos){
+                        boolean works = true;
+
+                        for (int j=0; j<N; j++){
+                            if (nums[j]!=a && nums[j]!=b && nums[j]!=c && nums[j]!=a+b && nums[j]!=b+c && nums[j]!=a+c && nums[j]!=a+b+c){
+                                works = false;
+                            }
+                        }
+
+
+                        if (works){
+                            if (b == c && a == c){
+                                ret+=6;
+                            }else if (a==b || a==c || b==c){
+                                ret+=2;
+                            }else {
+                                ret++;
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println(ret/6);
+        }
+    }
+
+}
